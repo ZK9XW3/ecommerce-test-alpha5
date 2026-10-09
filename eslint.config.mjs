@@ -167,7 +167,7 @@ export default tseslint.config(
 						},
 						{
 							from: element("presentation"),
-							allow: [to("application", SAME_MODULE), to("domain", SAME_MODULE), to("presentation", SAME_CHANNEL), to("shared-ports")]
+							allow: [to("application", SAME_MODULE), to("domain", SAME_MODULE), to("ports", SAME_MODULE), to("presentation", SAME_CHANNEL), to("shared-ports")]
 						},
 						{
 							from: element("infrastructure"),

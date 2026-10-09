@@ -1,6 +1,6 @@
 # [2] Connexion du gérant et protection des pages gérant
 
-Statut : À faire
+Statut : En cours
 Epic parente : EPIC-001 (EPIC-001-catalogue-cafes-et-stock.md)
 Bloqué par : T-001-01 (projet et outils installés)
 Lot : LOT-001 (docs/cpo/tickets/2026-10-09-lot-1-catalogue-cafes-et-stock.md)
@@ -100,6 +100,14 @@ src/
 - Aucune route gérant métier n'existe encore : pour P3, le test e2e peut déclarer une route protégée dans son propre module de test Nest, sans code réservé aux tests en production (TESTING-R14).
 - Test de contrat fake ↔ `InMemorySessionGerantRepository` (TESTING-R20).
 - Jamais de mot de passe en clair dans la configuration ni dans les journaux (SECURITY-R04, SECURITY-R06).
+
+### Écarts de niveau de test (TESTING-R21)
+
+| Scénario | Niveau suggéré | Niveau choisi | Raison |
+|---|---|---|---|
+| connexion réussie | unit (use case) | unit + e2e | L'e2e ne reteste pas la règle : il prouve le câblage HTTP de la route publique (201, JSON `{ token, expiresAt }`). |
+| mot de passe faux | unit (use case) | unit + e2e | L'e2e prouve le câblage d'`AccesGerantHttpErrorFilter` (401 avec le message unique), inatteignable par `execute`. |
+| page gérant avec connexion | e2e | e2e + unit | Le test unitaire d'`AuthenticateSessionGerantUseCase` fixe la règle « session existante et non expirée acceptée » ; l'e2e prouve que le guard laisse passer. |
 
 ### Critères de fin
 - [ ] Chaque scénario est vérifié par au moins un test.
