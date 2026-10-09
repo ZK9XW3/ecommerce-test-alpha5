@@ -1,17 +1,7 @@
 import { CafeRepositoryInterface } from "@catalogue/application/ports/CafeRepositoryInterface";
-import { Cafe } from "@catalogue/domain/cafe/Cafe";
-import { FormatCafe } from "@catalogue/domain/cafe/FormatCafe";
 import { InMemoryCafeRepository } from "@catalogue/infrastructure/repositories/InMemoryCafeRepository";
+import { CafeBuilder } from "@tests/unit/catalogue/builders/CafeBuilder";
 import { FakeCafeRepository } from "@tests/unit/catalogue/fakes/FakeCafeRepository";
-
-const createCafe = (id: string, nom: string): Cafe => {
-	return Cafe.create(id, {
-		nom,
-		origine: "Éthiopie",
-		description: "Notes florales.",
-		prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1700, [FormatCafe.Kilogramme1]: 3200 }
-	});
-};
 
 describe.each([
 	[
@@ -30,7 +20,7 @@ describe.each([
 	it("retrouve un café enregistré par son identifiant", async () => {
 		// Given
 		const repository = createRepository();
-		await repository.save(createCafe("cafe-1", "Moka Sidamo"));
+		await repository.save(new CafeBuilder().with({ nom: "Moka Sidamo" }).buildCafe("cafe-1"));
 
 		// When
 		const cafe = await repository.findById("cafe-1");
@@ -42,7 +32,7 @@ describe.each([
 	it("ne retrouve aucun café pour un identifiant inconnu", async () => {
 		// Given
 		const repository = createRepository();
-		await repository.save(createCafe("cafe-1", "Moka Sidamo"));
+		await repository.save(new CafeBuilder().with({ nom: "Moka Sidamo" }).buildCafe("cafe-1"));
 
 		// When
 		const cafe = await repository.findById("cafe-inconnu");
@@ -54,8 +44,8 @@ describe.each([
 	it("liste tous les cafés dans l'ordre d'enregistrement", async () => {
 		// Given
 		const repository = createRepository();
-		await repository.save(createCafe("cafe-1", "Moka Sidamo"));
-		await repository.save(createCafe("cafe-2", "Santos"));
+		await repository.save(new CafeBuilder().with({ nom: "Moka Sidamo" }).buildCafe("cafe-1"));
+		await repository.save(new CafeBuilder().with({ nom: "Santos" }).buildCafe("cafe-2"));
 
 		// When
 		const cafes = await repository.findAll();
@@ -71,10 +61,10 @@ describe.each([
 	it("remplace un café enregistré de nouveau avec le même identifiant", async () => {
 		// Given
 		const repository = createRepository();
-		await repository.save(createCafe("cafe-1", "Moka Sidamo"));
+		await repository.save(new CafeBuilder().with({ nom: "Moka Sidamo" }).buildCafe("cafe-1"));
 
 		// When
-		await repository.save(createCafe("cafe-1", "Moka Sidamo Grade 1"));
+		await repository.save(new CafeBuilder().with({ nom: "Moka Sidamo Grade 1" }).buildCafe("cafe-1"));
 
 		// Then
 		expect(await repository.findAll()).toHaveLength(1);
@@ -84,7 +74,7 @@ describe.each([
 	it("retire un café supprimé", async () => {
 		// Given
 		const repository = createRepository();
-		await repository.save(createCafe("cafe-1", "Moka Sidamo"));
+		await repository.save(new CafeBuilder().with({ nom: "Moka Sidamo" }).buildCafe("cafe-1"));
 
 		// When
 		await repository.delete("cafe-1");

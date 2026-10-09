@@ -2,17 +2,12 @@ import { AddCafeDTO } from "@catalogue/application/use-cases/AddCafeDTO";
 import { AddCafeUseCase } from "@catalogue/application/use-cases/AddCafeUseCase";
 import { FormatCafe } from "@catalogue/domain/cafe/FormatCafe";
 import { InvalidCafeError } from "@catalogue/domain/cafe/InvalidCafeError";
+import { CafeBuilder } from "@tests/unit/catalogue/builders/CafeBuilder";
 import { FakeAddCafePresenter } from "@tests/unit/catalogue/fakes/FakeAddCafePresenter";
 import { FakeCafeRepository } from "@tests/unit/catalogue/fakes/FakeCafeRepository";
 import { FakeIdGenerator } from "@tests/unit/catalogue/fakes/FakeIdGenerator";
 
 describe("AddCafeUseCase", () => {
-	const mokaSidamo = {
-		nom: "Moka Sidamo",
-		origine: "Éthiopie",
-		description: "Notes florales et d'agrumes.",
-		prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1700, [FormatCafe.Kilogramme1]: 3200 }
-	};
 	let cafeRepository: FakeCafeRepository;
 	let presenter: FakeAddCafePresenter;
 	let addCafe: AddCafeUseCase;
@@ -25,7 +20,12 @@ describe("AddCafeUseCase", () => {
 
 	it("ajout complet", async () => {
 		// Given
-		const dto = new AddCafeDTO(mokaSidamo);
+		const dto = new AddCafeDTO({
+			nom: "Moka Sidamo",
+			origine: "Éthiopie",
+			description: "Notes florales et d'agrumes.",
+			prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1700, [FormatCafe.Kilogramme1]: 3200 }
+		});
 
 		// When
 		await addCafe.execute(dto, presenter);
@@ -44,7 +44,7 @@ describe("AddCafeUseCase", () => {
 
 	it("format sans prix", async () => {
 		// Given
-		const dto = new AddCafeDTO({ ...mokaSidamo, prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1700 } });
+		const dto = new AddCafeDTO(new CafeBuilder().with({ prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1700 } }).buildFields());
 
 		// When
 		const add = addCafe.execute(dto, presenter);
@@ -57,7 +57,9 @@ describe("AddCafeUseCase", () => {
 
 	it("refuse un prix nul", async () => {
 		// Given
-		const dto = new AddCafeDTO({ ...mokaSidamo, prixEnCentimes: { ...mokaSidamo.prixEnCentimes, [FormatCafe.Grammes500]: 0 } });
+		const dto = new AddCafeDTO(
+			new CafeBuilder().with({ prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 0, [FormatCafe.Kilogramme1]: 3200 } }).buildFields()
+		);
 
 		// When
 		const add = addCafe.execute(dto, presenter);
@@ -75,7 +77,7 @@ describe("AddCafeUseCase", () => {
 			["description", { description: "  " }, /description/]
 		])("sans %s", async (_information, champManquant, messageAttendu) => {
 			// Given
-			const dto = new AddCafeDTO({ ...mokaSidamo, ...champManquant });
+			const dto = new AddCafeDTO(new CafeBuilder().with(champManquant).buildFields());
 
 			// When
 			const add = addCafe.execute(dto, presenter);

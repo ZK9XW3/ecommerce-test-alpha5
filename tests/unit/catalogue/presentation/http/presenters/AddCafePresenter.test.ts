@@ -1,14 +1,11 @@
-import { Cafe } from "@catalogue/domain/cafe/Cafe";
 import { FormatCafe } from "@catalogue/domain/cafe/FormatCafe";
 import { AddCafePresenter } from "@catalogue/presentation/http/presenters/AddCafePresenter";
+import { CafeBuilder } from "@tests/unit/catalogue/builders/CafeBuilder";
 
 describe("AddCafePresenter", () => {
-	const mokaSidamo = Cafe.create("cafe-1", {
-		nom: "Moka Sidamo",
-		origine: "Éthiopie",
-		description: "Notes florales et d'agrumes.",
-		prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1750, [FormatCafe.Kilogramme1]: 3200 }
-	});
+	const mokaSidamo = new CafeBuilder()
+		.with({ prixEnCentimes: { [FormatCafe.Grammes250]: 900, [FormatCafe.Grammes500]: 1750, [FormatCafe.Kilogramme1]: 3200 } })
+		.buildCafe("cafe-1");
 
 	it("affiche le prix de chaque format en euros, avec le libellé du format", () => {
 		// Given
