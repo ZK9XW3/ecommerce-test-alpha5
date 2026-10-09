@@ -1,7 +1,7 @@
 import { Controller, Get, INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { InvalidSessionError } from "@acces-gerant/domain/InvalidSessionError";
-import { GERANT_EMAIL, GERANT_PASSWORD, startTestApplication } from "@tests/e2e/bootstrap/TestApplication";
+import { logInGerant, startTestApplication } from "@tests/e2e/bootstrap/TestApplication";
 
 /**
  * Page gérant fictive, déclarée seulement dans ce test : aucune page gérant métier n'existe encore.
@@ -54,9 +54,7 @@ describe("GerantAuthGuard", () => {
 	it("page gérant avec connexion", async () => {
 		// Given
 		const url = await app.getUrl();
-		const logIn = await request(url).post("/gerant/session").send({ email: GERANT_EMAIL, password: GERANT_PASSWORD });
-		const body: unknown = logIn.body;
-		const token = typeof body === "object" && body !== null && "token" in body ? String(body.token) : "";
+		const token = await logInGerant(url);
 
 		// When
 		const response = await request(url).get("/gerant/page-de-test").set("Authorization", `Bearer ${token}`);

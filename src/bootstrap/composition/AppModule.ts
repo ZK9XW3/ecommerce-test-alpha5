@@ -12,6 +12,13 @@ import { AccesGerantHttpErrorFilter } from "@acces-gerant/presentation/http/erre
 import { AppConfiguration } from "@bootstrap/configuration/AppConfiguration";
 import { GerantAuthGuard } from "@bootstrap/entrypoints/http/GerantAuthGuard";
 import { UnexpectedErrorFilter } from "@bootstrap/entrypoints/http/UnexpectedErrorFilter";
+import { ReglagesBoutiqueRepositoryInterface } from "@reglages-boutique/application/ports/ReglagesBoutiqueRepositoryInterface";
+import { GetReglagesBoutiqueUseCase } from "@reglages-boutique/application/use-cases/GetReglagesBoutiqueUseCase";
+import { UpdateReglagesBoutiqueUseCase } from "@reglages-boutique/application/use-cases/UpdateReglagesBoutiqueUseCase";
+import { InMemoryReglagesBoutiqueRepository } from "@reglages-boutique/infrastructure/repositories/InMemoryReglagesBoutiqueRepository";
+import { GetReglagesBoutiqueController } from "@reglages-boutique/presentation/http/controllers/GetReglagesBoutiqueController";
+import { UpdateReglagesBoutiqueController } from "@reglages-boutique/presentation/http/controllers/UpdateReglagesBoutiqueController";
+import { ReglagesBoutiqueHttpErrorFilter } from "@reglages-boutique/presentation/http/erreurs/ReglagesBoutiqueHttpErrorFilter";
 import { ConsoleLogger } from "@shared/adapters/ConsoleLogger";
 import { SystemClock } from "@shared/adapters/SystemClock";
 import { ClockInterface } from "@shared/ports/ClockInterface";
@@ -22,7 +29,7 @@ import { LoggerInterface } from "@shared/ports/LoggerInterface";
  * le guard global et les filtres d'erreurs.
  */
 @Module({
-	controllers: [LogInGerantController],
+	controllers: [LogInGerantController, GetReglagesBoutiqueController, UpdateReglagesBoutiqueController],
 	providers: [
 		{
 			provide: AppConfiguration,
@@ -88,6 +95,34 @@ import { LoggerInterface } from "@shared/ports/LoggerInterface";
 			inject: [HttpAdapterHost],
 			useFactory: (httpAdapterHost: HttpAdapterHost): AccesGerantHttpErrorFilter => {
 				return new AccesGerantHttpErrorFilter(httpAdapterHost);
+			}
+		},
+		{
+			provide: InMemoryReglagesBoutiqueRepository,
+			inject: [AppConfiguration],
+			useFactory: (configuration: AppConfiguration): InMemoryReglagesBoutiqueRepository => {
+				return new InMemoryReglagesBoutiqueRepository(configuration.createReglagesBoutiqueInitiaux());
+			}
+		},
+		{
+			provide: GetReglagesBoutiqueUseCase,
+			inject: [InMemoryReglagesBoutiqueRepository],
+			useFactory: (reglagesBoutiqueRepository: ReglagesBoutiqueRepositoryInterface): GetReglagesBoutiqueUseCase => {
+				return new GetReglagesBoutiqueUseCase(reglagesBoutiqueRepository);
+			}
+		},
+		{
+			provide: UpdateReglagesBoutiqueUseCase,
+			inject: [InMemoryReglagesBoutiqueRepository],
+			useFactory: (reglagesBoutiqueRepository: ReglagesBoutiqueRepositoryInterface): UpdateReglagesBoutiqueUseCase => {
+				return new UpdateReglagesBoutiqueUseCase(reglagesBoutiqueRepository);
+			}
+		},
+		{
+			provide: APP_FILTER,
+			inject: [HttpAdapterHost],
+			useFactory: (httpAdapterHost: HttpAdapterHost): ReglagesBoutiqueHttpErrorFilter => {
+				return new ReglagesBoutiqueHttpErrorFilter(httpAdapterHost);
 			}
 		}
 	]

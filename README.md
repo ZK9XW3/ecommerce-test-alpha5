@@ -6,12 +6,15 @@ API HTTP NestJS de la boutique de café en ligne.
 
 L'application lit sa configuration dans des variables d'environnement au démarrage. Si une variable obligatoire manque ou est invalide, elle refuse de démarrer.
 
-| Variable                          | Obligatoire | Contenu                                                                                             |
-| --------------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
-| `GERANT_EMAIL`                    | oui         | E-mail du compte gérant unique                                                                      |
-| `GERANT_PASSWORD_HASH`            | oui         | Empreinte scrypt du mot de passe du gérant, forme `selHex:cléHex` (jamais le mot de passe en clair) |
-| `GERANT_SESSION_DURATION_MINUTES` | oui         | Durée d'une connexion du gérant, en minutes (ex. `480` pour 8 h)                                    |
-| `PORT`                            | non         | Port HTTP (3000 par défaut)                                                                         |
+| Variable                            | Obligatoire | Contenu                                                                                             |
+| ----------------------------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| `GERANT_EMAIL`                      | oui         | E-mail du compte gérant unique                                                                      |
+| `GERANT_PASSWORD_HASH`              | oui         | Empreinte scrypt du mot de passe du gérant, forme `selHex:cléHex` (jamais le mot de passe en clair) |
+| `GERANT_SESSION_DURATION_MINUTES`   | oui         | Durée d'une connexion du gérant, en minutes (ex. `480` pour 8 h)                                    |
+| `REGLAGES_SEUIL_STOCK_BAS_KG`       | oui         | Seuil de stock bas de départ, en kg (ex. `2` ou `1.5`, au gramme près)                              |
+| `REGLAGES_ADRESSE_ALERTE`           | oui         | Adresse e-mail de départ qui reçoit les alertes de stock bas                                        |
+| `REGLAGES_FRAIS_LIVRAISON_CENTIMES` | oui         | Frais de livraison de départ, en centimes (ex. `490` pour 4,90 €)                                   |
+| `PORT`                              | non         | Port HTTP (3000 par défaut)                                                                         |
 
 ### Produire l'empreinte du mot de passe
 
