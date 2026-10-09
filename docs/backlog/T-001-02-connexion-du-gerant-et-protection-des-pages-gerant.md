@@ -1,6 +1,6 @@
 # [2] Connexion du gérant et protection des pages gérant
 
-Statut : En cours
+Statut : Terminé
 Epic parente : EPIC-001 (EPIC-001-catalogue-cafes-et-stock.md)
 Bloqué par : T-001-01 (projet et outils installés)
 Lot : LOT-001 (docs/cpo/tickets/2026-10-09-lot-1-catalogue-cafes-et-stock.md)
