@@ -1,6 +1,7 @@
 # EPIC - Commande et paiement simulé
 
 Statut : À faire
+Rang : 3
 
 ## Problème / besoin
 Le visiteur a rempli son panier et veut acheter. Le gérant ne doit encaisser
@@ -16,9 +17,12 @@ que des commandes payées, sans jamais vendre un café qu'il n'a plus.
 - [ ] Paiement accepté : le client reçoit un e-mail de confirmation avec le récapitulatif de la commande et le montant payé.
 - [ ] Paiement refusé : aucune commande n'est créée, le stock ne change pas et le panier reste intact.
 - [ ] Le montant payé = sous-total des cafés + frais de livraison.
+- [ ] Deux clients paient en même temps le dernier stock d'un café : le premier paiement accepté obtient la commande ; le second reçoit « Stock insuffisant » avec le nom du café et n'est pas débité.
 
 ## Règles métier
 - Le stock est vérifié au moment du paiement, pas avant.
+- La vérification et la baisse du stock se font d'un seul coup, sans qu'un autre achat puisse passer entre les deux.
+- Les frais de livraison sont toujours payés, au prix fixe réglé par le gérant.
 - Les lignes « plus disponible » ne sont pas commandées.
 - Le service de paiement simulé doit pouvoir être remplacé par un vrai service sans changer le reste.
 

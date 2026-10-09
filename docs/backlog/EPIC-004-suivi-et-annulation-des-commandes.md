@@ -1,6 +1,7 @@
 # EPIC - Suivi et annulation des commandes
 
 Statut : À faire
+Rang : 4
 
 ## Problème / besoin
 Le gérant doit savoir où en est chaque commande pour la préparer et l'expédier.
@@ -19,6 +20,7 @@ Il doit aussi pouvoir annuler une commande sans perdre le café qu'elle bloquait
 - [ ] Un visiteur sans accès gérant ne peut ni voir ni modifier les commandes.
 
 ## Règles métier
+- L'accès gérant est celui défini dans l'EPIC catalogue (un seul compte, e-mail + mot de passe).
 - Une commande ne peut ni sauter une étape, ni revenir en arrière.
 - Une commande annulée ou livrée ne change plus de statut.
 - Le service de remboursement simulé doit pouvoir être remplacé par un vrai service sans changer le reste.
