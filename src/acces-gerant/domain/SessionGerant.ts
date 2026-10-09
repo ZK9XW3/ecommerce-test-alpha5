@@ -9,4 +9,11 @@ export class SessionGerant {
 		public readonly token: string,
 		public readonly expiresAt: Date
 	) {}
+
+	/**
+	 * Indique si la session est expirée à cet instant : elle l'est dès sa date d'expiration atteinte.
+	 */
+	public isExpiredAt(now: Date): boolean {
+		return now.getTime() >= this.expiresAt.getTime();
+	}
 }

@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
-import { APP_FILTER, HttpAdapterHost } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD, HttpAdapterHost, Reflector } from "@nestjs/core";
 import { SessionGerantRepositoryInterface } from "@acces-gerant/application/ports/SessionGerantRepositoryInterface";
+import { AuthenticateSessionGerantUseCase } from "@acces-gerant/application/use-cases/AuthenticateSessionGerantUseCase";
 import { LogInGerantUseCase } from "@acces-gerant/application/use-cases/LogInGerantUseCase";
 import { ConfiguredCompteGerantReader } from "@acces-gerant/infrastructure/adapters/ConfiguredCompteGerantReader";
 import { CryptoSessionTokenGenerator } from "@acces-gerant/infrastructure/adapters/CryptoSessionTokenGenerator";
@@ -9,11 +10,16 @@ import { InMemorySessionGerantRepository } from "@acces-gerant/infrastructure/re
 import { LogInGerantController } from "@acces-gerant/presentation/http/controllers/LogInGerantController";
 import { AccesGerantHttpErrorFilter } from "@acces-gerant/presentation/http/erreurs/AccesGerantHttpErrorFilter";
 import { AppConfiguration } from "@bootstrap/configuration/AppConfiguration";
+import { GerantAuthGuard } from "@bootstrap/entrypoints/http/GerantAuthGuard";
+import { UnexpectedErrorFilter } from "@bootstrap/entrypoints/http/UnexpectedErrorFilter";
+import { ConsoleLogger } from "@shared/adapters/ConsoleLogger";
 import { SystemClock } from "@shared/adapters/SystemClock";
 import { ClockInterface } from "@shared/ports/ClockInterface";
+import { LoggerInterface } from "@shared/ports/LoggerInterface";
 
 /**
- * Module racine de l'application : branche chaque port sur son implémentation, les controllers et les filtres d'erreurs.
+ * Module racine de l'application : branche chaque port sur son implémentation, les controllers,
+ * le guard global et les filtres d'erreurs.
  */
 @Module({
 	controllers: [LogInGerantController],
@@ -48,6 +54,33 @@ import { ClockInterface } from "@shared/ports/ClockInterface";
 					clock,
 					sessionDurationInMilliseconds: configuration.sessionDurationInMilliseconds
 				});
+			}
+		},
+		{
+			provide: ConsoleLogger,
+			useFactory: (): ConsoleLogger => {
+				return new ConsoleLogger();
+			}
+		},
+		{
+			provide: AuthenticateSessionGerantUseCase,
+			inject: [InMemorySessionGerantRepository, SystemClock],
+			useFactory: (sessionGerantRepository: SessionGerantRepositoryInterface, clock: ClockInterface): AuthenticateSessionGerantUseCase => {
+				return new AuthenticateSessionGerantUseCase(sessionGerantRepository, clock);
+			}
+		},
+		{
+			provide: APP_GUARD,
+			inject: [Reflector, AuthenticateSessionGerantUseCase],
+			useFactory: (reflector: Reflector, authenticateSessionGerant: AuthenticateSessionGerantUseCase): GerantAuthGuard => {
+				return new GerantAuthGuard(reflector, authenticateSessionGerant);
+			}
+		},
+		{
+			provide: APP_FILTER,
+			inject: [HttpAdapterHost, ConsoleLogger],
+			useFactory: (httpAdapterHost: HttpAdapterHost, logger: LoggerInterface): UnexpectedErrorFilter => {
+				return new UnexpectedErrorFilter(httpAdapterHost, logger);
 			}
 		},
 		{
