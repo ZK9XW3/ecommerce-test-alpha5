@@ -1,0 +1,15 @@
+{
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testMatch": ["<rootDir>/tests/**/*.test.ts"],
+  "transform": { "^.+[.]ts$": "ts-jest" },
+  "moduleFileExtensions": ["ts", "js", "json"],
+  "moduleNameMapper": {
+    "^@acces-gerant/(.*)$": "<rootDir>/src/acces-gerant/$1",
+    "^@catalogue/(.*)$": "<rootDir>/src/catalogue/$1",
+    "^@reglages-boutique/(.*)$": "<rootDir>/src/reglages-boutique/$1",
+    "^@bootstrap/(.*)$": "<rootDir>/src/bootstrap/$1",
+    "^@shared/(.*)$": "<rootDir>/src/shared/$1",
+    "^@tests/(.*)$": "<rootDir>/tests/$1"
+  }
+}

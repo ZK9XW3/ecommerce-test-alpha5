@@ -51,11 +51,11 @@ backlog:
 
 # Commandes de contrôle lancées par le développeur et par le lead tech (relecture) (texte libre, ex. 'npm run lint'). null = contrôle non disponible.
 checks:
-  types: null
-  lint: null
-  format: null
-  tests: null
-  build: null
+  types: 'npm run typecheck'
+  lint: 'npm run lint'
+  format: 'npm run format'
+  tests: 'npm test'
+  build: 'npm run build'
 
 # Dossiers où les rôles écrivent leurs documents (un fichier par document à l'intérieur).
 # Chemins relatifs à .config/. null = le rôle demande où écrire.
