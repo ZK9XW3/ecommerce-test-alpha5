@@ -23,10 +23,17 @@ export class PoidsStock {
 			throw new InvalidReglagesBoutiqueError(PoidsStock.NEGATIF);
 		}
 
-		if (grammes / PoidsStock.GRAMMES_PAR_KG !== kilogrammes) {
+		if (!PoidsStock.isWholeGrammes(kilogrammes, grammes)) {
 			throw new InvalidReglagesBoutiqueError(PoidsStock.PLUS_FIN_QUE_LE_GRAMME);
 		}
 
 		return new PoidsStock(grammes);
+	}
+
+	/**
+	 * Indique si les kilogrammes reçus tombent juste sur ce nombre entier de grammes, sans reste plus fin que le gramme.
+	 */
+	private static isWholeGrammes(kilogrammes: number, grammes: number): boolean {
+		return grammes / PoidsStock.GRAMMES_PAR_KG === kilogrammes;
 	}
 }

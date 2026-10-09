@@ -19,9 +19,9 @@ export class GetReglagesBoutiquePresenter implements GetReglagesBoutiquePresente
 	 */
 	public present(result: ReglagesBoutique): void {
 		this.presentedViewModel = new GetReglagesBoutiqueViewModel(
-			`${GetReglagesBoutiquePresenter.KILOGRAMMES_FORMAT.format(result.seuilStockBas.grammes / GetReglagesBoutiquePresenter.GRAMMES_PAR_KG)} kg`,
+			this.formatKilogrammes(result.seuilStockBas.grammes),
 			result.adresseAlerte.value,
-			`${GetReglagesBoutiquePresenter.EUROS_FORMAT.format(result.fraisLivraison.centimes / GetReglagesBoutiquePresenter.CENTIMES_PAR_EURO)} €`
+			this.formatEuros(result.fraisLivraison.centimes)
 		);
 	}
 
@@ -34,5 +34,19 @@ export class GetReglagesBoutiquePresenter implements GetReglagesBoutiquePresente
 		}
 
 		return this.presentedViewModel;
+	}
+
+	/**
+	 * Met un poids en grammes sous la forme « 2,000 kg ».
+	 */
+	private formatKilogrammes(grammes: number): string {
+		return `${GetReglagesBoutiquePresenter.KILOGRAMMES_FORMAT.format(grammes / GetReglagesBoutiquePresenter.GRAMMES_PAR_KG)} kg`;
+	}
+
+	/**
+	 * Met un montant en centimes sous la forme « 4,90 € ».
+	 */
+	private formatEuros(centimes: number): string {
+		return `${GetReglagesBoutiquePresenter.EUROS_FORMAT.format(centimes / GetReglagesBoutiquePresenter.CENTIMES_PAR_EURO)} €`;
 	}
 }
