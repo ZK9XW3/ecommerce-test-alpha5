@@ -1,0 +1,67 @@
+# Configuration du projet pour le plugin faber-fabrica.
+# Référence des clés : docs/reference/configuration.md du plugin.
+# Les chemins relatifs partent du dossier contenant ce fichier (.config/).
+# Les valeurs sont littérales : pas de $VAR ni de variable propre à un outil ; ~ seulement dans plugin.root.
+# Valeur non fournie : écrite `null`. Tu peux la remplir plus tard à la main ou avec /faber-fabrica:configurer.
+# Clé absente ou null : le rôle demande la valeur, propose de l'écrire ici, puis continue.
+
+# Version du format de ce fichier. Seule valeur acceptée : 1.
+schemaVersion: 1
+
+# root : racine du code du projet (dossier). null = dossier parent de .config/.
+project:
+  root: null
+
+# root : dossier du plugin installé, celui qui contient rules/, knowledge/, docs/ et skills/.
+# Clé vitale : sans elle, les rôles s'arrêtent. Seule clé où ~ (ton dossier personnel) est accepté.
+# Exemples selon l'outil (remplace les parties entre < > par tes valeurs) :
+#   Claude Code : '~/.claude/plugins/cache/<marketplace>/faber-fabrica/<version>'
+#                 Le chemin contient la version : mets-le à jour après chaque mise à jour du plugin.
+#   Codex CLI   : '~/.codex/plugins/cache/<marketplace>/faber-fabrica/<version>' (à vérifier)
+#   OpenCode    : dossier où tu as cloné le dépôt du plugin, par exemple '~/outils/faber-fabrica'
+#                 (OpenCode lit les skills dans ~/.config/opencode/skills/ ; à vérifier)
+plugin:
+  root: '~/.claude/plugins/cache/faber-fabrica/faber-fabrica/0.0.0-alpha.5'
+
+# Règles de code lues par les rôles.
+# provider : filesystem (seule valeur acceptée). root : dossier des règles ; null = <plugin.root>/rules.
+rules:
+  provider: filesystem
+  root: null
+
+# Connaissances métier lues par les rôles.
+# provider : filesystem (seule valeur acceptée). root : dossier des connaissances ; null = <plugin.root>/knowledge.
+knowledge:
+  provider: filesystem
+  root: null
+
+# Langue des commentaires de documentation du code (docblocks) : fr | en.
+code:
+  docblockLanguage: fr
+
+# Backlog des tickets (clés vitales).
+# provider : notion | github | libre (libre = tout autre outil : tickets locaux, Jira, Trello...).
+# location : id ou URL de la base Notion, owner/repo pour GitHub, ou emplacement libre (ex. dossier de tickets).
+# instructions : texte libre expliquant comment lire et écrire le backlog (outil MCP, CLI, conventions de fichiers...).
+#   Vital avec le fournisseur libre ; facultatif pour notion et github.
+backlog:
+  provider: libre
+  location: ../docs/backlog/
+  instructions: 'Un fichier Markdown par ticket dans docs/backlog/ ; le statut est dans l''en-tête « Statut ».'
+
+# Commandes de contrôle lancées par le développeur et par le lead tech (relecture) (texte libre, ex. 'npm run lint'). null = contrôle non disponible.
+checks:
+  types: null
+  lint: null
+  format: null
+  tests: null
+  build: null
+
+# Dossiers où les rôles écrivent leurs documents (un fichier par document à l'intérieur).
+# Chemins relatifs à .config/. null = le rôle demande où écrire.
+artifacts:
+  prd: ../docs/cpo/prd/
+  architecture: ../docs/cto/architecture/
+  adr: ../docs/cto/adr/
+  handoffs: ../docs/handoffs/
+  ticketBatch: ../docs/cpo/tickets/
