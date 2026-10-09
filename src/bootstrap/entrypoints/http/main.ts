@@ -1,7 +1,8 @@
 import "reflect-metadata";
-import { INestApplication, ValidationPipe } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "@bootstrap/composition/AppModule";
+import { configureApp } from "@bootstrap/entrypoints/http/configureApp";
 
 const DEFAULT_PORT = 3000;
 
@@ -29,8 +30,7 @@ const readPort = (): number => {
  * Crée l'application HTTP NestJS, active la validation stricte des requêtes et écoute le port.
  */
 const bootstrap = async (): Promise<INestApplication> => {
-	const app = await NestFactory.create(AppModule);
-	app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+	const app = configureApp(await NestFactory.create(AppModule));
 	await app.listen(readPort());
 
 	return app;

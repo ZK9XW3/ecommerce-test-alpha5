@@ -2,13 +2,14 @@ import { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { AppModule } from "@bootstrap/composition/AppModule";
+import { configureApp } from "@bootstrap/entrypoints/http/configureApp";
 
 describe("Application HTTP", () => {
 	let app: INestApplication;
 
 	beforeEach(async () => {
 		const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
-		app = moduleRef.createNestApplication();
+		app = configureApp(moduleRef.createNestApplication());
 		await app.listen(0);
 	});
 
