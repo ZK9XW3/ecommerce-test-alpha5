@@ -1,5 +1,5 @@
 import { LogInGerantPresenterInterface } from "@acces-gerant/application/ports/LogInGerantPresenterInterface";
-import { LogInGerantResult } from "@acces-gerant/application/use-cases/LogInGerantResult";
+import { SessionGerant } from "@acces-gerant/domain/SessionGerant";
 import { LogInGerantViewModel } from "@acces-gerant/presentation/http/presenters/LogInGerantViewModel";
 
 /**
@@ -21,7 +21,7 @@ export class LogInGerantPresenter implements LogInGerantPresenterInterface {
 	/**
 	 * Construit le ViewModel : jeton inchangé, date d'expiration à l'heure de Paris au format « jj/mm/aaaa hh:mm ».
 	 */
-	public present(result: LogInGerantResult): void {
+	public present(result: SessionGerant): void {
 		this.presentedViewModel = new LogInGerantViewModel(result.token, LogInGerantPresenter.DATE_FORMAT.format(result.expiresAt));
 	}
 

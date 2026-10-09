@@ -14,7 +14,7 @@ describe("POST /gerant/session", () => {
 		await app.close();
 	});
 
-	it("connexion réussie", async () => {
+	it("répond 201 avec un JSON { token, expiresAt } (câblage HTTP de la connexion)", async () => {
 		// Given
 		const url = await app.getUrl();
 
@@ -27,7 +27,7 @@ describe("POST /gerant/session", () => {
 		expect(response.body).toHaveProperty("expiresAt", expect.stringMatching(/^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/));
 	});
 
-	it("mot de passe faux", async () => {
+	it("répond 401 avec le message unique des identifiants refusés (câblage AccesGerantHttpErrorFilter)", async () => {
 		// Given
 		const url = await app.getUrl();
 

@@ -4,7 +4,6 @@ import { PasswordVerifierInterface } from "@acces-gerant/application/ports/Passw
 import { SessionGerantRepositoryInterface } from "@acces-gerant/application/ports/SessionGerantRepositoryInterface";
 import { SessionTokenGeneratorInterface } from "@acces-gerant/application/ports/SessionTokenGeneratorInterface";
 import { LogInGerantDTO } from "@acces-gerant/application/use-cases/LogInGerantDTO";
-import { LogInGerantResult } from "@acces-gerant/application/use-cases/LogInGerantResult";
 import { LogInGerantUseCaseDependenciesInterface } from "@acces-gerant/application/use-cases/LogInGerantUseCaseDependenciesInterface";
 import { InvalidCredentialsError } from "@acces-gerant/domain/InvalidCredentialsError";
 import { SessionGerant } from "@acces-gerant/domain/SessionGerant";
@@ -34,6 +33,13 @@ export class LogInGerantUseCase {
 	}
 
 	/**
+	 * Met l'e-mail sous une forme comparable : sans espaces autour et en minuscules.
+	 */
+	private static normalizeEmail(email: string): string {
+		return email.trim().toLowerCase();
+	}
+
+	/**
 	 * Ouvre une session si l'e-mail et le mot de passe sont ceux du compte gérant, puis la transmet au presenter.
 	 * Lève InvalidCredentialsError sinon, avec le même message que l'e-mail ou le mot de passe soit faux.
 	 */
@@ -41,7 +47,7 @@ export class LogInGerantUseCase {
 		await this.ensureCredentialsMatch(dto);
 		const session = this.openSession();
 		await this.sessionGerantRepository.save(session);
-		presenter.present(new LogInGerantResult(session.token, session.expiresAt));
+		presenter.present(session);
 	}
 
 	/**
@@ -59,7 +65,7 @@ export class LogInGerantUseCase {
 	 */
 	private async ensureCredentialsMatch(dto: LogInGerantDTO): Promise<void> {
 		const passwordMatches = await this.passwordVerifier.verify(dto.password, this.compteGerantReader.readPasswordHash());
-		const emailMatches = dto.email === this.compteGerantReader.readEmail();
+		const emailMatches = LogInGerantUseCase.normalizeEmail(dto.email) === LogInGerantUseCase.normalizeEmail(this.compteGerantReader.readEmail());
 
 		if (!emailMatches || !passwordMatches) {
 			throw new InvalidCredentialsError();

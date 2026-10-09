@@ -101,6 +101,14 @@ src/
 - Test de contrat fake ↔ `InMemorySessionGerantRepository` (TESTING-R20).
 - Jamais de mot de passe en clair dans la configuration ni dans les journaux (SECURITY-R04, SECURITY-R06).
 
+### Écarts de niveau de test (TESTING-R21)
+
+| Scénario | Niveau suggéré | Niveau choisi | Raison |
+|---|---|---|---|
+| connexion réussie | unit (use case) | unit + e2e | L'e2e ne reteste pas la règle : il prouve le câblage HTTP de la route publique (201, JSON `{ token, expiresAt }`). |
+| mot de passe faux | unit (use case) | unit + e2e | L'e2e prouve le câblage d'`AccesGerantHttpErrorFilter` (401 avec le message unique), inatteignable par `execute`. |
+| page gérant avec connexion | e2e | e2e + unit | Le test unitaire d'`AuthenticateSessionGerantUseCase` fixe la règle « session existante et non expirée acceptée » ; l'e2e prouve que le guard laisse passer. |
+
 ### Critères de fin
 - [ ] Chaque scénario est vérifié par au moins un test.
 - [ ] Les commandes de contrôle de la partie technique réussissent.

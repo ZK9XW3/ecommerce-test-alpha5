@@ -1,4 +1,4 @@
-import { LogInGerantResult } from "@acces-gerant/application/use-cases/LogInGerantResult";
+import { SessionGerant } from "@acces-gerant/domain/SessionGerant";
 import { LogInGerantPresenter } from "@acces-gerant/presentation/http/presenters/LogInGerantPresenter";
 
 describe("LogInGerantPresenter", () => {
@@ -7,7 +7,7 @@ describe("LogInGerantPresenter", () => {
 		const presenter = new LogInGerantPresenter();
 
 		// When
-		presenter.present(new LogInGerantResult("jeton-1", new Date("2026-10-09T16:00:00.000Z")));
+		presenter.present(new SessionGerant("jeton-1", new Date("2026-10-09T16:00:00.000Z")));
 
 		// Then
 		expect(presenter.viewModel().expiresAt).toBe("09/10/2026 18:00");
@@ -18,7 +18,7 @@ describe("LogInGerantPresenter", () => {
 		const presenter = new LogInGerantPresenter();
 
 		// When
-		presenter.present(new LogInGerantResult("jeton-1", new Date("2026-10-09T16:00:00.000Z")));
+		presenter.present(new SessionGerant("jeton-1", new Date("2026-10-09T16:00:00.000Z")));
 
 		// Then
 		expect(presenter.viewModel().token).toBe("jeton-1");

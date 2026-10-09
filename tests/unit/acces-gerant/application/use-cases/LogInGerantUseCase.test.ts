@@ -63,4 +63,15 @@ describe("LogInGerantUseCase", () => {
 		await expect(logIn).rejects.toThrow(new InvalidCredentialsError().message);
 		expect(presenter.result()).toBeUndefined();
 	});
+
+	it("e-mail avec majuscules et espaces", async () => {
+		// Given
+		const dto = new LogInGerantDTO("  Gerant@Cafe.FR ", "bon-mot-de-passe");
+
+		// When
+		await logInGerant.execute(dto, presenter);
+
+		// Then
+		expect(presenter.result()?.token).toBe("jeton-1");
+	});
 });
