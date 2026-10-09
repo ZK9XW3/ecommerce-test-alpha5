@@ -1,4 +1,6 @@
 import { AppConfigurationFieldsInterface } from "@bootstrap/configuration/AppConfigurationFieldsInterface";
+import { InvalidReglagesBoutiqueError } from "@reglages-boutique/domain/InvalidReglagesBoutiqueError";
+import { ReglagesBoutique } from "@reglages-boutique/domain/ReglagesBoutique";
 import { ReglagesBoutiqueFieldsInterface } from "@reglages-boutique/domain/ReglagesBoutiqueFieldsInterface";
 
 /**
@@ -115,5 +117,21 @@ export class AppConfiguration {
 		}
 
 		return value;
+	}
+
+	/**
+	 * Construit les réglages de départ de la boutique, ou échoue en nommant les variables REGLAGES_*
+	 * quand une valeur enfreint une règle métier (le message du domaine seul ne nomme pas la configuration).
+	 */
+	public createReglagesBoutiqueInitiaux(): ReglagesBoutique {
+		try {
+			return ReglagesBoutique.fromFields(this.reglagesBoutiqueInitiaux);
+		} catch (error) {
+			if (error instanceof InvalidReglagesBoutiqueError) {
+				throw new Error(`Configuration : réglages initiaux REGLAGES_* invalides. ${error.message}`, { cause: error });
+			}
+
+			throw error;
+		}
 	}
 }

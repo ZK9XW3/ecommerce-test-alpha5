@@ -15,7 +15,6 @@ import { UnexpectedErrorFilter } from "@bootstrap/entrypoints/http/UnexpectedErr
 import { ReglagesBoutiqueRepositoryInterface } from "@reglages-boutique/application/ports/ReglagesBoutiqueRepositoryInterface";
 import { GetReglagesBoutiqueUseCase } from "@reglages-boutique/application/use-cases/GetReglagesBoutiqueUseCase";
 import { UpdateReglagesBoutiqueUseCase } from "@reglages-boutique/application/use-cases/UpdateReglagesBoutiqueUseCase";
-import { ReglagesBoutique } from "@reglages-boutique/domain/ReglagesBoutique";
 import { InMemoryReglagesBoutiqueRepository } from "@reglages-boutique/infrastructure/repositories/InMemoryReglagesBoutiqueRepository";
 import { GetReglagesBoutiqueController } from "@reglages-boutique/presentation/http/controllers/GetReglagesBoutiqueController";
 import { UpdateReglagesBoutiqueController } from "@reglages-boutique/presentation/http/controllers/UpdateReglagesBoutiqueController";
@@ -102,7 +101,7 @@ import { LoggerInterface } from "@shared/ports/LoggerInterface";
 			provide: InMemoryReglagesBoutiqueRepository,
 			inject: [AppConfiguration],
 			useFactory: (configuration: AppConfiguration): InMemoryReglagesBoutiqueRepository => {
-				return new InMemoryReglagesBoutiqueRepository(ReglagesBoutique.fromFields(configuration.reglagesBoutiqueInitiaux));
+				return new InMemoryReglagesBoutiqueRepository(configuration.createReglagesBoutiqueInitiaux());
 			}
 		},
 		{

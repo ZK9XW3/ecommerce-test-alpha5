@@ -143,4 +143,17 @@ describe("AppConfiguration", () => {
 		// Then
 		expect(load).toThrow("GERANT_SESSION_DURATION_MINUTES");
 	});
+
+	it("échoue en nommant REGLAGES_* si un réglage initial enfreint une règle métier", () => {
+		// Given
+		const configuration = AppConfiguration.fromEnvironment({ ...validEnvironment, REGLAGES_SEUIL_STOCK_BAS_KG: "-1" });
+
+		// When
+		const createReglages = (): unknown => {
+			return configuration.createReglagesBoutiqueInitiaux();
+		};
+
+		// Then
+		expect(createReglages).toThrow("Configuration : réglages initiaux REGLAGES_* invalides");
+	});
 });
