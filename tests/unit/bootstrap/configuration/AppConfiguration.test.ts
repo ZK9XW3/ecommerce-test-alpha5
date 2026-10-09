@@ -4,8 +4,61 @@ describe("AppConfiguration", () => {
 	const validEnvironment = {
 		GERANT_EMAIL: "gerant@cafe.fr",
 		GERANT_PASSWORD_HASH: "a1b2:c3d4",
-		GERANT_SESSION_DURATION_MINUTES: "480"
+		GERANT_SESSION_DURATION_MINUTES: "480",
+		REGLAGES_SEUIL_STOCK_BAS_KG: "1.5",
+		REGLAGES_ADRESSE_ALERTE: "alerte@cafe.fr",
+		REGLAGES_FRAIS_LIVRAISON_CENTIMES: "490"
 	};
+
+	it("lit les réglages initiaux de la boutique", () => {
+		// Given
+		const environment = validEnvironment;
+
+		// When
+		const configuration = AppConfiguration.fromEnvironment(environment);
+
+		// Then
+		expect(configuration.reglagesBoutiqueInitiaux).toEqual({ seuilStockBasEnKg: 1.5, adresseAlerte: "alerte@cafe.fr", fraisLivraisonEnCentimes: 490 });
+	});
+
+	it("échoue au démarrage si l'adresse d'alerte initiale est absente", () => {
+		// Given
+		const environment = { ...validEnvironment, REGLAGES_ADRESSE_ALERTE: undefined };
+
+		// When
+		const load = (): AppConfiguration => {
+			return AppConfiguration.fromEnvironment(environment);
+		};
+
+		// Then
+		expect(load).toThrow("REGLAGES_ADRESSE_ALERTE");
+	});
+
+	it("échoue au démarrage si le seuil initial n'est pas un nombre", () => {
+		// Given
+		const environment = { ...validEnvironment, REGLAGES_SEUIL_STOCK_BAS_KG: "deux" };
+
+		// When
+		const load = (): AppConfiguration => {
+			return AppConfiguration.fromEnvironment(environment);
+		};
+
+		// Then
+		expect(load).toThrow("REGLAGES_SEUIL_STOCK_BAS_KG");
+	});
+
+	it("échoue au démarrage si les frais de livraison initiaux ne sont pas un nombre", () => {
+		// Given
+		const environment = { ...validEnvironment, REGLAGES_FRAIS_LIVRAISON_CENTIMES: "" };
+
+		// When
+		const load = (): AppConfiguration => {
+			return AppConfiguration.fromEnvironment(environment);
+		};
+
+		// Then
+		expect(load).toThrow("REGLAGES_FRAIS_LIVRAISON_CENTIMES");
+	});
 
 	it("lit la durée de session en minutes et la convertit en millisecondes", () => {
 		// Given
