@@ -9,6 +9,13 @@ import { ScryptPasswordVerifier } from "@acces-gerant/infrastructure/adapters/Sc
 import { InMemorySessionGerantRepository } from "@acces-gerant/infrastructure/repositories/InMemorySessionGerantRepository";
 import { LogInGerantController } from "@acces-gerant/presentation/http/controllers/LogInGerantController";
 import { AccesGerantHttpErrorFilter } from "@acces-gerant/presentation/http/erreurs/AccesGerantHttpErrorFilter";
+import { CafeRepositoryInterface } from "@catalogue/application/ports/CafeRepositoryInterface";
+import { AddCafeUseCase } from "@catalogue/application/use-cases/AddCafeUseCase";
+import { ListCataloguePublicUseCase } from "@catalogue/application/use-cases/ListCataloguePublicUseCase";
+import { InMemoryCafeRepository } from "@catalogue/infrastructure/repositories/InMemoryCafeRepository";
+import { AddCafeController } from "@catalogue/presentation/http/controllers/AddCafeController";
+import { ListCataloguePublicController } from "@catalogue/presentation/http/controllers/ListCataloguePublicController";
+import { CatalogueHttpErrorFilter } from "@catalogue/presentation/http/erreurs/CatalogueHttpErrorFilter";
 import { AppConfiguration } from "@bootstrap/configuration/AppConfiguration";
 import { GerantAuthGuard } from "@bootstrap/entrypoints/http/GerantAuthGuard";
 import { UnexpectedErrorFilter } from "@bootstrap/entrypoints/http/UnexpectedErrorFilter";
@@ -20,8 +27,10 @@ import { GetReglagesBoutiqueController } from "@reglages-boutique/presentation/h
 import { UpdateReglagesBoutiqueController } from "@reglages-boutique/presentation/http/controllers/UpdateReglagesBoutiqueController";
 import { ReglagesBoutiqueHttpErrorFilter } from "@reglages-boutique/presentation/http/erreurs/ReglagesBoutiqueHttpErrorFilter";
 import { ConsoleLogger } from "@shared/adapters/ConsoleLogger";
+import { RandomUuidGenerator } from "@shared/adapters/RandomUuidGenerator";
 import { SystemClock } from "@shared/adapters/SystemClock";
 import { ClockInterface } from "@shared/ports/ClockInterface";
+import { IdGeneratorInterface } from "@shared/ports/IdGeneratorInterface";
 import { LoggerInterface } from "@shared/ports/LoggerInterface";
 
 /**
@@ -29,7 +38,7 @@ import { LoggerInterface } from "@shared/ports/LoggerInterface";
  * le guard global et les filtres d'erreurs.
  */
 @Module({
-	controllers: [LogInGerantController, GetReglagesBoutiqueController, UpdateReglagesBoutiqueController],
+	controllers: [LogInGerantController, GetReglagesBoutiqueController, UpdateReglagesBoutiqueController, AddCafeController, ListCataloguePublicController],
 	providers: [
 		{
 			provide: AppConfiguration,
@@ -123,6 +132,39 @@ import { LoggerInterface } from "@shared/ports/LoggerInterface";
 			inject: [HttpAdapterHost],
 			useFactory: (httpAdapterHost: HttpAdapterHost): ReglagesBoutiqueHttpErrorFilter => {
 				return new ReglagesBoutiqueHttpErrorFilter(httpAdapterHost);
+			}
+		},
+		{
+			provide: InMemoryCafeRepository,
+			useFactory: (): InMemoryCafeRepository => {
+				return new InMemoryCafeRepository();
+			}
+		},
+		{
+			provide: RandomUuidGenerator,
+			useFactory: (): RandomUuidGenerator => {
+				return new RandomUuidGenerator();
+			}
+		},
+		{
+			provide: AddCafeUseCase,
+			inject: [InMemoryCafeRepository, RandomUuidGenerator],
+			useFactory: (cafeRepository: CafeRepositoryInterface, idGenerator: IdGeneratorInterface): AddCafeUseCase => {
+				return new AddCafeUseCase(cafeRepository, idGenerator);
+			}
+		},
+		{
+			provide: ListCataloguePublicUseCase,
+			inject: [InMemoryCafeRepository],
+			useFactory: (cafeRepository: CafeRepositoryInterface): ListCataloguePublicUseCase => {
+				return new ListCataloguePublicUseCase(cafeRepository);
+			}
+		},
+		{
+			provide: APP_FILTER,
+			inject: [HttpAdapterHost],
+			useFactory: (httpAdapterHost: HttpAdapterHost): CatalogueHttpErrorFilter => {
+				return new CatalogueHttpErrorFilter(httpAdapterHost);
 			}
 		}
 	]

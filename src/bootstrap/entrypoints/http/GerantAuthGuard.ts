@@ -2,14 +2,17 @@ import { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthenticateSessionGerantDTO } from "@acces-gerant/application/use-cases/AuthenticateSessionGerantDTO";
 import { AuthenticateSessionGerantUseCase } from "@acces-gerant/application/use-cases/AuthenticateSessionGerantUseCase";
-import { publicRoute } from "@acces-gerant/presentation/http/controllers/publicRoute";
+import { publicRoute as accesGerantPublicRoute } from "@acces-gerant/presentation/http/controllers/publicRoute";
+import { publicRoute as cataloguePublicRoute } from "@catalogue/presentation/http/controllers/publicRoute";
 
 /**
  * Guard global : refuse toute route sans session gérant valide, sauf les routes marquées publicRoute (SECURITY-R12).
+ * Chaque module qui a une route publique déclare son propre décorateur publicRoute (aucun import entre modules) ; ce guard les connaît tous.
  * Le jeton est lu dans l'en-tête « Authorization: Bearer <jeton> ».
  */
 export class GerantAuthGuard implements CanActivate {
 	private static readonly BEARER_PREFIX = "Bearer ";
+	private static readonly PUBLIC_ROUTE_DECORATORS = [accesGerantPublicRoute, cataloguePublicRoute];
 
 	/**
 	 * Reçoit le lecteur de métadonnées de Nest et le use case d'authentification.
@@ -35,10 +38,12 @@ export class GerantAuthGuard implements CanActivate {
 	}
 
 	/**
-	 * Indique si la route ou son controller porte le décorateur publicRoute.
+	 * Indique si la route ou son controller porte le décorateur publicRoute de l'un des modules.
 	 */
 	private isPublicRoute(context: ExecutionContext): boolean {
-		return this.reflector.getAllAndOverride(publicRoute, [context.getHandler(), context.getClass()]) === true;
+		return GerantAuthGuard.PUBLIC_ROUTE_DECORATORS.some((publicRoute) => {
+			return this.reflector.getAllAndOverride(publicRoute, [context.getHandler(), context.getClass()]) === true;
+		});
 	}
 
 	/**
