@@ -160,14 +160,14 @@ export default tseslint.config(
 					default: "disallow",
 					policies: [
 						{ from: element("domain"), allow: [to("domain", SAME_MODULE)] },
-						{ from: element("ports"), allow: [to("domain", SAME_MODULE), to("ports", SAME_MODULE), to("shared-ports")] },
+						{ from: element("ports"), allow: [to("domain", SAME_MODULE), to("ports", SAME_MODULE), to("application", SAME_MODULE), to("shared-ports")] },
 						{
 							from: element("application"),
 							allow: [to("domain", SAME_MODULE), to("ports", SAME_MODULE), to("application", SAME_MODULE), to("shared-ports")]
 						},
 						{
 							from: element("presentation"),
-							allow: [to("application", SAME_MODULE), to("domain", SAME_MODULE), to("presentation", SAME_CHANNEL), to("shared-ports")]
+							allow: [to("application", SAME_MODULE), to("domain", SAME_MODULE), to("ports", SAME_MODULE), to("presentation", SAME_CHANNEL), to("shared-ports")]
 						},
 						{
 							from: element("infrastructure"),
